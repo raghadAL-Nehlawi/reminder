@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,7 @@ import 'package:reminder/ui/main_page/widgets/drop_down_list_controller.dart';
 import 'package:reminder/ui/main_page/widgets/switch_button.dart';
 import 'package:reminder/uitls/constants/constants.dart';
 import 'package:reminder/uitls/storage_controller.dart';
+import 'package:reminder/uitls/utils.dart';
 
 class MainPageController extends GetxController{
 
@@ -24,7 +27,14 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != from.value)
     {
+      if(from.value.hour > to.value.hour)
+        Utils.openSnackBar(title: "error", message: "error in  selected time");
+      else if(from.value.hour == to.value.hour)
+        if(from.value.minute > to.value.minute)
+          Utils.openSnackBar(title: "error", message: "error in  selected time");
+        else
         from.value = timeOfDay;
+
     }
   }
 
@@ -37,6 +47,12 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != to.value)
     {
+      if(from.value.hour > to.value.hour)
+        Utils.openSnackBar(title: "error", message: "error in  selected time");
+      else if(from.value.hour == to.value.hour)
+        if(from.value.minute > to.value.minute)
+          Utils.openSnackBar(title: "error", message: "error in  selected time");
+        else
       to.value = timeOfDay;
     }
   }
@@ -69,9 +85,24 @@ class MainPageController extends GetxController{
 
   timeOnChange(val){
 
-      scheduleAlarm(DateTime.now().add(Duration(seconds: Constants.ALARM_TIME[selectedTime.value])));
+      scheduleAlarm(DateTime.now().add(Duration(minutes: Constants.ALARM_TIME[val])));
+      selectedTime.value = val;
+     setTimer(val);
 
-    selectedTime.value = val;
+  }
+
+  setTimer(val){
+    Timer(
+        Duration(minutes: Constants.ALARM_TIME[val]),
+            () {
+          if(DateTime.now().isAfter(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,from.value.hour, from.value.minute))
+          && DateTime.now().isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,to.value.hour, to.value.minute))
+          ){}
+          else
+          scheduleAlarm(DateTime.now());
+          if(selectedTime.value  == val)
+             setTimer(val);
+        });
   }
 
   voiceOnChange(val){
@@ -86,7 +117,7 @@ class MainPageController extends GetxController{
       'Channel for Alarm notification',
       playSound:  StorageController().voiceSwitchButton,
       icon: '@mipmap/launcher_icon',
-      sound: RawResourceAndroidNotificationSound(voices.selectedItem == "type1"? "1": "2"),
+      sound: RawResourceAndroidNotificationSound(voices?.selectedItem.toString() == "type1"? "a": "b"),
       largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
     );
 
