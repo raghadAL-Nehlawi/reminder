@@ -12,10 +12,31 @@ import 'package:reminder/uitls/utils.dart';
 
 class MainPageController extends GetxController{
 
-  Rx<TimeOfDay> from = TimeOfDay.now().obs;
-  Rx<TimeOfDay> to = TimeOfDay.now().obs;
+  Rx<TimeOfDay> from = TimeOfDay(hour: 22,minute: 0).obs;
+  Rx<TimeOfDay> to =  TimeOfDay(hour: 12,minute: 0).obs;
   RxString selectedTime = ''.obs;
   RxString selectedVoice = ''.obs;
+
+  SwitchButtonController voiceController = SwitchButtonController(
+    name: "تنبيه الصوت".tr,
+    ison: StorageController().voiceSwitchButton,
+  );
+
+  SwitchButtonController notificationController = SwitchButtonController(
+    name: "تنبيه الاشعارات".tr,
+    ison: StorageController().notificationSwitchButton,);
+
+  SwitchButtonController sleepController = SwitchButtonController(
+      name: "عدم الازعاج اثناء النوم".tr,
+      ison: StorageController().sleepSwitchButton,);
+
+  AppDropdownButtonController times = AppDropdownButtonController(
+      items: Constants.ALARM_TIME.keys.toList().obs,
+      selectedItem: '');
+
+  AppDropdownButtonController voices = AppDropdownButtonController(items: Constants.VOICE_TYPE.toList().obs,
+    selectedItem: '',
+  );
 
 
   selectFromTime(BuildContext context) async {
@@ -27,12 +48,12 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != from.value)
     {
-      if(from.value.hour > to.value.hour)
+      /*if(from.value.hour > to.value.hour)
         Utils.openSnackBar(title: "error", message: "error in  selected time");
       else if(from.value.hour == to.value.hour)
         if(from.value.minute > to.value.minute)
           Utils.openSnackBar(title: "error", message: "error in  selected time");
-        else
+        else*/
         from.value = timeOfDay;
 
     }
@@ -47,45 +68,27 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != to.value)
     {
-      if(from.value.hour > to.value.hour)
+     /* if(from.value.hour > to.value.hour)
         Utils.openSnackBar(title: "error", message: "error in  selected time");
       else if(from.value.hour == to.value.hour)
         if(from.value.minute > to.value.minute)
           Utils.openSnackBar(title: "error", message: "error in  selected time");
-        else
+        else*/
       to.value = timeOfDay;
     }
   }
 
+  toggleNotification(val){
+    StorageController().notificationSwitchButton = val;
+  }
 
-
-  SwitchButtonController voiceController = SwitchButtonController(
-      name: "تنبيه الصوت".tr,
-      ison: StorageController().voiceSwitchButton,
-      onChange: (){});
-
-
-  SwitchButtonController notificationController = SwitchButtonController(
-      name: "تنبيه الاشعارات".tr,
-      ison: StorageController().notificationSwitchButton,
-      onChange: (){});
-
-  SwitchButtonController sleepController = SwitchButtonController(
-      name: "عدم الازعاج اثناء النوم".tr,
-      ison: StorageController().sleepSwitchButton,
-      onChange: (){});
-
-  AppDropdownButtonController times = AppDropdownButtonController(
-                                          items: Constants.ALARM_TIME.keys.toList().obs,
-                                          selectedItem: '');
-
-  AppDropdownButtonController voices = AppDropdownButtonController(items: Constants.VOICE_TYPE.toList().obs,
-  selectedItem: '',
-  );
+  toggleVoice(val){
+    StorageController().voiceSwitchButton = val;
+  }
 
   timeOnChange(val){
 
-      scheduleAlarm(DateTime.now().add(Duration(minutes: Constants.ALARM_TIME[val])));
+      scheduleAlarm(DateTime.now().add(Duration(seconds: Constants.ALARM_TIME[val])));
       selectedTime.value = val;
      setTimer(val);
 
@@ -93,12 +96,13 @@ class MainPageController extends GetxController{
 
   setTimer(val){
     Timer(
-        Duration(minutes: Constants.ALARM_TIME[val]),
+        Duration(seconds: Constants.ALARM_TIME[val]),
             () {
-          if(DateTime.now().isAfter(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,from.value.hour, from.value.minute))
+          ///TODO CHECK IF IT IS TIME TO SLEEP
+         /* if(DateTime.now().isAfter(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,from.value.hour, from.value.minute))
           && DateTime.now().isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,to.value.hour, to.value.minute))
           ){}
-          else
+          else*/
           scheduleAlarm(DateTime.now());
           if(selectedTime.value  == val)
              setTimer(val);
@@ -108,8 +112,6 @@ class MainPageController extends GetxController{
   voiceOnChange(val){
     selectedVoice.value = val.obs;
   }
-
-
 
   void scheduleAlarm(DateTime scheduledNotificationDateTime) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(

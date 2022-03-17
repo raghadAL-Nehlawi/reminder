@@ -7,7 +7,9 @@ import 'package:reminder/uitls/constants/textStyles.dart';
 class SwitchButton extends StatelessWidget {
   final SwitchButtonController controller;
   final TextStyle style;
-  const SwitchButton({Key key, this.controller, this.style}) : super(key: key);
+  Function onChange;
+   SwitchButton({Key key, this.controller, this.style, this.onChange}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class SwitchButton extends StatelessWidget {
                splashRadius: 20,
               onChanged: (val) {
                 controller.toggle();
-               controller.onChange(val);
+               onChange(val);
               },
               value: controller.isOn,
               activeColor: AppColors.switchOnBackgroundButton,
@@ -55,8 +57,8 @@ class SwitchButton extends StatelessWidget {
 class SwitchButtonController extends GetxController{
   final String name;
    RxBool _on = false.obs;
-   Function onChange;
-  SwitchButtonController({bool ison = false, this.onChange, this.name}) {
+
+  SwitchButtonController({bool ison = true, this.name}) {
 
     this._on = ison.obs;
   }

@@ -18,8 +18,8 @@ class MainPage extends GetView<MainPageController> {
         child: Column(children: [
           SizedBox(height: 20,),
           HeaderWidget(),
-          SwitchButton(controller: controller.voiceController,),
-          SwitchButton(controller: controller.notificationController,),
+          SwitchButton(controller: controller.voiceController,onChange: controller.toggleVoice),
+          SwitchButton(controller: controller.notificationController,onChange: controller.toggleNotification,),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
