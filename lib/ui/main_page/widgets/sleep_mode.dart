@@ -19,7 +19,11 @@ class SleepMode extends GetWidget<MainPageController> {
       child: Obx(() => Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(children: [
-          SwitchButton(controller: controller.sleepController,style: AppTextStyle.openSansLargePrimary,),
+          SwitchButton(
+            controller: controller.sleepController,
+            style: AppTextStyle.openSansLargePrimary,
+            onChange: controller.toggleSleepTime
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

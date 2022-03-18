@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -8,27 +7,30 @@ import 'package:reminder/ui/main_page/widgets/drop_down_list_controller.dart';
 import 'package:reminder/ui/main_page/widgets/switch_button.dart';
 import 'package:reminder/uitls/constants/constants.dart';
 import 'package:reminder/uitls/storage_controller.dart';
-import 'package:reminder/uitls/utils.dart';
+
+
 
 class MainPageController extends GetxController{
 
-  Rx<TimeOfDay> from = TimeOfDay(hour: 22,minute: 0).obs;
-  Rx<TimeOfDay> to =  TimeOfDay(hour: 12,minute: 0).obs;
+  Rx<TimeOfDay> from;
+  Rx<TimeOfDay> to;
   RxString selectedTime = ''.obs;
   RxString selectedVoice = ''.obs;
 
   SwitchButtonController voiceController = SwitchButtonController(
     name: "تنبيه الصوت".tr,
-    ison: StorageController().voiceSwitchButton,
+    value: StorageController().voiceSwitchButton.obs,
   );
 
   SwitchButtonController notificationController = SwitchButtonController(
     name: "تنبيه الاشعارات".tr,
-    ison: StorageController().notificationSwitchButton,);
+    value: StorageController().notificationSwitchButton.obs,
+    );
 
   SwitchButtonController sleepController = SwitchButtonController(
       name: "عدم الازعاج اثناء النوم".tr,
-      ison: StorageController().sleepSwitchButton,);
+      value: StorageController().sleepSwitchButton.obs
+  );
 
   AppDropdownButtonController times = AppDropdownButtonController(
       items: Constants.ALARM_TIME.keys.toList().obs,
@@ -48,14 +50,8 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != from.value)
     {
-      /*if(from.value.hour > to.value.hour)
-        Utils.openSnackBar(title: "error", message: "error in  selected time");
-      else if(from.value.hour == to.value.hour)
-        if(from.value.minute > to.value.minute)
-          Utils.openSnackBar(title: "error", message: "error in  selected time");
-        else*/
-        from.value = timeOfDay;
-
+      StorageController().fromSleepDate = timeOfDay;
+        from = timeOfDay.obs;
     }
   }
 
@@ -68,13 +64,8 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != to.value)
     {
-     /* if(from.value.hour > to.value.hour)
-        Utils.openSnackBar(title: "error", message: "error in  selected time");
-      else if(from.value.hour == to.value.hour)
-        if(from.value.minute > to.value.minute)
-          Utils.openSnackBar(title: "error", message: "error in  selected time");
-        else*/
-      to.value = timeOfDay;
+      to = timeOfDay.obs;
+      StorageController().toSleepDate = timeOfDay;
     }
   }
 
@@ -86,8 +77,13 @@ class MainPageController extends GetxController{
     StorageController().voiceSwitchButton = val;
   }
 
-  timeOnChange(val){
+  toggleSleepTime(val){
+    StorageController().sleepSwitchButton = val;
+  }
 
+  timeOnChange(val){
+      print(StorageController().toSleepDate.toString());
+      print(StorageController().notificationSwitchButton);
       scheduleAlarm(DateTime.now().add(Duration(seconds: Constants.ALARM_TIME[val])));
       selectedTime.value = val;
      setTimer(val);
@@ -95,15 +91,13 @@ class MainPageController extends GetxController{
   }
 
   setTimer(val){
+
     Timer(
         Duration(seconds: Constants.ALARM_TIME[val]),
             () {
-          ///TODO CHECK IF IT IS TIME TO SLEEP
-         /* if(DateTime.now().isAfter(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,from.value.hour, from.value.minute))
-          && DateTime.now().isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,to.value.hour, to.value.minute))
-          ){}
-          else*/
-          scheduleAlarm(DateTime.now());
+
+          if(!checkIfItIsSleepTime(TimeOfDay.now()) && StorageController().notificationSwitchButton)
+              scheduleAlarm(DateTime.now());
           if(selectedTime.value  == val)
              setTimer(val);
         });
@@ -128,6 +122,42 @@ class MainPageController extends GetxController{
 
     await flutterLocalNotificationsPlugin.schedule(0, 'تذكير', "تذكير ",
         scheduledNotificationDateTime, platformChannelSpecifics);
+  }
+
+  bool checkIfItIsSleepTime(TimeOfDay current){
+    if(from.value.hour > to.value.hour || (from.value.hour == to.value.hour && from.value.minute > to.value.minute)) /// 22 - 10
+    {
+      if(current.hour <= 12)
+      {
+        if((current.hour > from.value.hour || (from.value.hour == current.hour && from.value.minute < current.minute)) )
+           return true;
+         return false;
+      }
+      else if (current.hour < to.value.hour || (to.value.hour == current.hour && to.value.minute > current.minute))
+        return true;
+      return false;
+    }
+    else /// 1 - 12
+    {
+      if(from.value.hour == to.value.hour && current.hour ==  to.value.hour) /// 12.1 - 12.54
+      {
+        if(current.minute > from.value.minute && current.minute < to.value.minute)
+          return true;
+      }
+      else if((current.hour > from.value.hour && current.hour < to.value.hour)
+          || (current.hour == from.value.hour && current.minute > from.value.minute)
+          || (current.hour == to.value.hour && current.minute < to.value.minute))
+        return true;
+      return false;
+    }
+  }
+
+  @override
+  void onInit() {
+    voiceController.value = StorageController().voiceSwitchButton.obs;
+    from = StorageController().fromSleepDate.obs;
+    to =  StorageController().toSleepDate.obs;
+    super.onInit();
   }
 
 }

@@ -48,26 +48,15 @@ class SwitchButton extends StatelessWidget {
 
 
 
-
-
-
-
-
-
 class SwitchButtonController extends GetxController{
   final String name;
-   RxBool _on = false.obs;
+   RxBool value;
 
-  SwitchButtonController({bool ison = true, this.name}) {
+  SwitchButtonController({  this.value, this.name});
 
-    this._on = ison.obs;
-  }
+  get isOn => value.value == true;
 
-  get isOn => _on.value == true;
+  get toggle => value.toggle();
 
-  get toggle => _on.toggle();
-
-  get on => _on.value = true;
-
-  get off => _on.value = false;
+  //set value(bool val) => _value = val.obs;
 }
