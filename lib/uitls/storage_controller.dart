@@ -20,6 +20,10 @@ class StorageController {
       ReadWriteValue(Constants.FROM_DATE_SLEEP, TimeOfDay(hour: 22,minute: 0));
   var _fromSleepDate =
       ReadWriteValue(Constants.TO_DATE_SLEEP, TimeOfDay(hour: 10,minute: 0));
+  var _timeAlarm =
+    ReadWriteValue(Constants.TIME_ALARM, Constants.ALARM_TIME.keys.first);
+  var _voiceAlarm =
+    ReadWriteValue(Constants.VOICE_ALARM, Constants.VOICE_TYPE[0]);
 
 
   bool get notificationSwitchButton => _notificationSwitchButton.val;
@@ -27,6 +31,8 @@ class StorageController {
   bool get sleepSwitchButton => _voiceSwitchButton.val;
   TimeOfDay get toSleepDate => _toSleepDate.val;
   TimeOfDay get fromSleepDate => _fromSleepDate.val;
+  String get timeAlarm => _timeAlarm.val;
+  String get voiceAlarm => _voiceAlarm.val;
 
 
   set notificationSwitchButton(bool value) => _notificationSwitchButton.val = value;
@@ -34,6 +40,8 @@ class StorageController {
   set sleepSwitchButton(bool value) => _sleepSwitchButton.val = value;
   set toSleepDate(TimeOfDay value) => _toSleepDate.val = value;
   set fromSleepDate(TimeOfDay value) => _fromSleepDate.val = value;
+  set timeAlarm(String value) => _timeAlarm.val = value;
+  set voiceAlarm(String value) => _voiceAlarm.val = value;
 
 
 }

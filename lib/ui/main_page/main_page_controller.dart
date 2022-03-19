@@ -34,10 +34,10 @@ class MainPageController extends GetxController{
 
   AppDropdownButtonController times = AppDropdownButtonController(
       items: Constants.ALARM_TIME.keys.toList().obs,
-      selectedItem: '');
+      selectedItem: StorageController().timeAlarm);
 
   AppDropdownButtonController voices = AppDropdownButtonController(items: Constants.VOICE_TYPE.toList().obs,
-    selectedItem: '',
+    selectedItem: StorageController().voiceAlarm,
   );
 
 
@@ -46,12 +46,10 @@ class MainPageController extends GetxController{
       context: context,
       initialTime: from.value,
       initialEntryMode: TimePickerEntryMode.dial,
-
     );
     if(timeOfDay != null && timeOfDay != from.value)
     {
-      StorageController().fromSleepDate = timeOfDay;
-        from = timeOfDay.obs;
+        from.value = timeOfDay;
     }
   }
 
@@ -64,8 +62,7 @@ class MainPageController extends GetxController{
     );
     if(timeOfDay != null && timeOfDay != to.value)
     {
-      to = timeOfDay.obs;
-      StorageController().toSleepDate = timeOfDay;
+      to.value = timeOfDay;
     }
   }
 
@@ -82,11 +79,10 @@ class MainPageController extends GetxController{
   }
 
   timeOnChange(val){
-      print(StorageController().toSleepDate.toString());
-      print(StorageController().notificationSwitchButton);
       scheduleAlarm(DateTime.now().add(Duration(seconds: Constants.ALARM_TIME[val])));
       selectedTime.value = val;
      setTimer(val);
+     StorageController().timeAlarm = val;
 
   }
 
@@ -96,7 +92,8 @@ class MainPageController extends GetxController{
         Duration(seconds: Constants.ALARM_TIME[val]),
             () {
 
-          if(!checkIfItIsSleepTime(TimeOfDay.now()) && StorageController().notificationSwitchButton)
+          if(!(checkIfItIsSleepTime(TimeOfDay.now()) && StorageController().sleepSwitchButton)
+                                                                              && StorageController().notificationSwitchButton)
               scheduleAlarm(DateTime.now());
           if(selectedTime.value  == val)
              setTimer(val);
@@ -105,6 +102,7 @@ class MainPageController extends GetxController{
 
   voiceOnChange(val){
     selectedVoice.value = val.obs;
+    StorageController().voiceAlarm = val;
   }
 
   void scheduleAlarm(DateTime scheduledNotificationDateTime) async {
@@ -154,7 +152,6 @@ class MainPageController extends GetxController{
 
   @override
   void onInit() {
-    voiceController.value = StorageController().voiceSwitchButton.obs;
     from = StorageController().fromSleepDate.obs;
     to =  StorageController().toSleepDate.obs;
     super.onInit();

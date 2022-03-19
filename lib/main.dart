@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:reminder/ui/splash_screen/splash_binding.dart';
+import 'package:reminder/uitls/dependency_injection.dart';
 import 'package:reminder/uitls/routes/app_pages.dart';
 import 'package:reminder/uitls/utils.dart';
 
@@ -26,6 +27,8 @@ void main()async {
           debugPrint('notification payload: ' + payload);
         }
       });
+  await DependencyInjection.init();
+
   runApp(const MyApp());
 }
 

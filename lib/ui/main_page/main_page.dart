@@ -36,7 +36,7 @@ class MainPage extends GetView<MainPageController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("نوع الصوت".tr, style: AppTextStyle.openSansLargeWhiteBold,),
-                AppDropdownButton(controller: controller.voices,),
+                AppDropdownButton(controller: controller.voices,onChange: controller.selectedVoice,),
               ],
             ),
           ),

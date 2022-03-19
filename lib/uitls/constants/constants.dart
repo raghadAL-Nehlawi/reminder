@@ -5,6 +5,8 @@ abstract class Constants {
   static const String SLEEP_SWITCH_BUTTON = 'sleep-switch-button';
   static const FROM_DATE_SLEEP = 'from-date';
   static const String TO_DATE_SLEEP = 'to-date';
+  static const String VOICE_ALARM = 'voice-alarm';
+  static const String TIME_ALARM = 'time-alarm';
   static const ALARM_TIME = const
     {
       "5 min" : 5,
