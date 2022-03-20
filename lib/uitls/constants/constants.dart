@@ -9,9 +9,9 @@ abstract class Constants {
   static const String TIME_ALARM = 'time-alarm';
   static const ALARM_TIME = const
     {
-      "5 min" : 5,
-      "10 min" : 10,
-      "15 min" : 5,
+      /*"5 min" : 5,
+      "10 min" : 10,*/
+      "15 min" : 15,
       "0.5 h" : 30,
       "1 h" : 60
     };

@@ -12,8 +12,10 @@ class DependencyInjection {
     initProviders();
     initRepositories();
     await initGetStorage();
+
   }
 }
+
 
 void initProviders() {
   print('init Providers');

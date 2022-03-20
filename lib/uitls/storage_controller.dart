@@ -17,9 +17,9 @@ class StorageController {
   var _sleepSwitchButton =
       ReadWriteValue(Constants.SLEEP_SWITCH_BUTTON, false);
   var _toSleepDate =
-      ReadWriteValue(Constants.FROM_DATE_SLEEP, TimeOfDay(hour: 22,minute: 0));
+      ReadWriteValue(Constants.FROM_DATE_SLEEP, TimeOfDay(hour: 10,minute: 0));
   var _fromSleepDate =
-      ReadWriteValue(Constants.TO_DATE_SLEEP, TimeOfDay(hour: 10,minute: 0));
+      ReadWriteValue(Constants.TO_DATE_SLEEP, TimeOfDay(hour: 22,minute: 0));
   var _timeAlarm =
     ReadWriteValue(Constants.TIME_ALARM, Constants.ALARM_TIME.keys.first);
   var _voiceAlarm =
